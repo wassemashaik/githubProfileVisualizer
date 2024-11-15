@@ -1,0 +1,24 @@
+.failure-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.failure-view-image {
+  width: 280px;
+  height: 137px;
+}
+.failure-head {
+  font-size: 16px;
+  line-height: 32px;
+  font-weight: 700;
+}
+.failure-button {
+  background-color: #3b82f6;
+  color: #ffffff;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+}
