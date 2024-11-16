@@ -58,7 +58,8 @@ class Home extends Component {
   getUserDetails = async () => {
     const {searchInput} = this.state
     this.setState({apiStatus: apiStatusConstants.inProgress})
-    const userNameUrl = `https://apis2.ccbp.in/gpv/profile-details/${searchInput}?api_key=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`
+    const apiKey = process.env.REACT_APP_SECRET_KEY
+    const userNameUrl = `https://apis2.ccbp.in/gpv/profile-details/${searchInput}?api_key=${apiKey}`
     const options = {
       method: 'GET',
     }

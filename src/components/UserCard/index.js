@@ -52,6 +52,7 @@ const UserCard = props => {
             {company}
           </p>
         </div>
+        <hr className="hr-line" />
         <div className="follower-container">
           <h1 className="follow-head">Location</h1>
           <p className="follow-para">
