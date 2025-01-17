@@ -1,0 +1,97 @@
+.repo-main-container {
+  background-color: #0f172a;
+  height: 640px;
+  width: 360px;
+  padding: 10px;
+  background-attachment: fixed;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #f8fafc;
+}
+.no-data-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.no-data-img {
+  width: 296px;
+  height: 220px;
+  margin: 10px;
+}
+.no-data-head {
+  font-size: 20px;
+  font-weight: 400;
+}
+.empty-username-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.empty-para {
+  font-size: 14px;
+  font-weight: 500;
+  color: #f8fafc;
+}
+.button {
+  background-color: #ffffff;
+  color: #0f172a;
+  padding: 8px;
+  font-size: 12px;
+  margin: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  width: 98px;
+  height: 32px;
+}
+@media screen and (min-width: 576px) {
+  .repo-main-container {
+    height: 1024px;
+    width: 1440px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #f8fafc;
+    flex-shrink: 1;
+  }
+  .empty-username-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .button {
+    background-color: #ffffff;
+    color: #0f172a;
+    padding: 10px;
+    font-size: 14px;
+    margin: 10px;
+    border-radius: 8px;
+    width: 124px;
+    height: 48px;
+    border: none;
+    cursor: pointer;
+  }
+  .no-data-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .no-data-img {
+    width: 551px;
+    height: 409px;
+    margin: 10px;
+  }
+  .no-data-head {
+    font-size: 32px;
+    font-weight: 700;
+  }
+}

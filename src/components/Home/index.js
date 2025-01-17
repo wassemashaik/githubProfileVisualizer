@@ -1,9 +1,10 @@
 import {Component} from 'react'
 import Loader from 'react-loader-spinner'
 import {HiOutlineSearch} from 'react-icons/hi'
-import Header from '../Header'
 import FailureView from '../FailureView'
 import UserCard from '../UserCard'
+import Header from '../Header'
+import ProfileContext from '../../context/ProfileContext'
 import './index.css'
 
 const apiStatusConstants = {
@@ -15,30 +16,17 @@ const apiStatusConstants = {
 
 class Home extends Component {
   state = {
-    searchInput: '',
     apiStatus: apiStatusConstants.initial,
     errorMsg: '',
     setShowErrorMsg: false,
     userData: [],
   }
 
-  componentDidMount() {
-    const {searchInput} = this.state
-    if (searchInput) {
-      this.getUserDetails()
-    }
+  onRetry = setSearchInput => {
+    setSearchInput('')
   }
 
-  handleInputChange = event => {
-    this.setState({searchInput: event.target.value})
-  }
-
-  onRetry = () => {
-    this.setState({searchInput: ''})
-  }
-
-  searchClick = () => {
-    const {searchInput} = this.state
+  searchClick = (setSearchInput, searchInput) => {
     if (searchInput.trim() === '') {
       this.setState({
         setShowErrorMsg: true,
@@ -46,60 +34,66 @@ class Home extends Component {
         apiStatus: apiStatusConstants.failure,
       })
     } else {
+      setSearchInput(searchInput)
       this.setState({
         setShowErrorMsg: false,
         errorMsg: '',
-        apiStatus: apiStatusConstants.success,
       })
-      this.getUserDetails()
+      this.getUserDetails(searchInput)
     }
   }
 
-  getUserDetails = async () => {
-    const {searchInput} = this.state
+  getUserDetails = async searchInput => {
     this.setState({apiStatus: apiStatusConstants.inProgress})
     const apiKey = process.env.REACT_APP_SECRET_KEY
+    console.log(apiKey)
+    console.log(searchInput)
     const userNameUrl = `https://apis2.ccbp.in/gpv/profile-details/${searchInput}?api_key=${apiKey}`
     const options = {
       method: 'GET',
     }
-    const response = await fetch(userNameUrl, options)
-    if (response.ok) {
-      const data = await response.json()
-      console.log(data)
-      const updatedData = {
-        id: data.id,
-        avatarUrl: data.avatar_url,
-        login: data.login,
-        bio: data.bio,
-        followers: data.followers,
-        following: data.following,
-        publicRepos: data.public_repos,
-        company: data.company,
-        location: data.location,
-        name: data.name,
-        organizationsUrl: data.organizations_url,
+    try {
+      const response = await fetch(userNameUrl, options)
+      if (response.ok) {
+        const data = await response.json()
+        console.log(data)
+        const updatedData = {
+          id: data.id,
+          avatarUrl: data.avatar_url,
+          login: data.login,
+          bio: data.bio,
+          followers: data.followers,
+          following: data.following,
+          publicRepos: data.public_repos,
+          company: data.company,
+          location: data.location,
+          name: data.name,
+          organizationsUrl: data.organizations_url,
+        }
+        console.log(updatedData)
+        this.setState({
+          userData: updatedData,
+          apiStatus: apiStatusConstants.success,
+        })
+      } else {
+        this.setState({apiStatus: apiStatusConstants.failure})
       }
-      console.log(updatedData)
+    } catch (error) {
       this.setState({
-        userData: data,
-        apiStatus: apiStatusConstants.success,
+        apiStatus: apiStatusConstants.failure,
       })
-    } else {
-      this.setState({apiStatus: apiStatusConstants.failure})
+      console.log(error)
     }
   }
 
   renderInitialView = () => (
-    <div>
-      <div className="image-container">
-        <h1 className="initial-heading">Github Profile Visualizer</h1>
-        <img
-          alt="github profile visualizer home page"
-          className="initial-image"
-          src="https://res.cloudinary.com/daqmgqiuf/image/upload/v1724160235/zi0wfazx6svarjvriifb.png"
-        />
-      </div>
+    <div className="image-container">
+      <h1 className="initial-heading">Github Profile Visualizer</h1>
+      <img
+        alt="gitHub profile visualizer home page"
+        className="initial-image"
+        src="https://res.cloudinary.com/daqmgqiuf/image/upload/v1724160235/zi0wfazx6svarjvriifb.png"
+      />
     </div>
   )
 
@@ -113,14 +107,16 @@ class Home extends Component {
     const {userData} = this.state
     return (
       <div className="user-home-details">
-        <UserCard key={userData.id} userData={userData} />
+        <UserCard userData={userData} />
       </div>
     )
   }
 
-  renderFailureView = () => <FailureView onRetry={this.onRetry} />
+  renderFailureView = setSearchInput => (
+    <FailureView onRetry={() => this.onRetry(setSearchInput)} />
+  )
 
-  renderAll = () => {
+  renderAll = setSearchInput => {
     const {apiStatus} = this.state
 
     switch (apiStatus) {
@@ -131,41 +127,57 @@ class Home extends Component {
       case apiStatusConstants.success:
         return this.renderSuccessView()
       case apiStatusConstants.failure:
-        return this.renderFailureView()
+        return this.renderFailureView(setSearchInput)
       default:
         return null
     }
   }
 
   render() {
-    const {searchInput, errorMsg, setShowErrorMsg} = this.state
+    const {errorMsg, setShowErrorMsg} = this.state
     return (
-      <div className="main-home-container">
-        <Header />
-        <div className="input-col-container">
-          <div className="input-container">
-            <input
-              className={setShowErrorMsg ? 'error-input' : 'normal-input'}
-              placeholder="Enter github username"
-              type="search"
-              value={searchInput}
-              name="username"
-              onChange={this.handleInputChange}
-            />
-            <button
-              aria-label="searchButton"
-              data-testid="searchButton"
-              type="button"
-              className="search-button"
-              onClick={this.searchClick}
-            >
-              <HiOutlineSearch data-testid="Search Icon" />
-            </button>
-          </div>
-          {setShowErrorMsg && <p className="error-msg">*{errorMsg}</p>}
-        </div>
-        <div className="home-view-container">{this.renderAll()}</div>
-      </div>
+      <ProfileContext.Consumer>
+        {value => {
+          const {searchInput, setSearchInput} = value
+
+          const handleInputChange = event => {
+            setSearchInput(event.target.value)
+          }
+
+          return (
+            <div data-testid="Home" className="main-home-container">
+              <Header />
+              <div className="input-col-container">
+                <div className="input-container">
+                  <input
+                    type="search"
+                    className={setShowErrorMsg ? 'error-input' : 'normal-input'}
+                    placeholder="Enter github username"
+                    value={searchInput}
+                    name="username"
+                    onChange={handleInputChange}
+                  />
+                  <button
+                    aria-label="searchButton"
+                    data-testid="searchButton"
+                    type="button"
+                    className="search-button"
+                    onClick={() =>
+                      this.searchClick(setSearchInput, searchInput)
+                    }
+                  >
+                    <HiOutlineSearch data-testid="Search Icon" />
+                  </button>
+                </div>
+                {setShowErrorMsg && <p className="error-msg">*{errorMsg}</p>}
+              </div>
+              <div className="home-view-container">
+                {this.renderAll(setSearchInput)}
+              </div>
+            </div>
+          )
+        }}
+      </ProfileContext.Consumer>
     )
   }
 }

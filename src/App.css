@@ -1,7 +1,11 @@
 * {
   box-sizing: border-box;
 }
-
+.image {
+  width: 206px;
+  height: 226px;
+  margin: 10px;
+}
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

@@ -21,8 +21,12 @@
   text-decoration: none;
   color: #ffffff;
 }
+.link {
+  text-decoration: none;
+  margin: 0px 5px;
+}
 .custom-link:hover {
-  color: #3b82f6 !important;
+  color: #3b82f6;
 }
 .active {
   color: #3b82f6;
